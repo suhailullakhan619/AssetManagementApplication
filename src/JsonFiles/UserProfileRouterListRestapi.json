@@ -1,0 +1,16 @@
+[
+  {
+    "title": "UserProfile",
+    "path": "UserProfileRestapi",
+    "color": "grey",
+    "isSelected": false,
+    "icon": "mdi-account"
+  },
+   {
+  "title":"Category",
+  "path" :"CategoryRestapi",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-palette-swatch-outline"
+  }
+]

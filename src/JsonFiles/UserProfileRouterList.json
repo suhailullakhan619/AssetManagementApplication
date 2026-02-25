@@ -1,0 +1,29 @@
+[
+  {
+    "title": "UserProfile",
+    "path": "UserProfile",
+    "color": "grey",
+    "isSelected": false,
+    "icon": "mdi-account"
+  },
+   {
+  "title":"Category",
+  "path" :"Category",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-palette-swatch-outline"
+  },
+   {
+  "title":"Manufacturer",
+  "path" :"Manufacture",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-office-building-outline"
+  }, {
+  "title":"Supplier",
+  "path" :"Supplier",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-truck-outline"
+  }
+]

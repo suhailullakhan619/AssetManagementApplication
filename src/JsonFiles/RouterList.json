@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Dashboard",
+    "path": "/Dashboard",
+    "color": "primary",
+    "isSelected": false,
+    "icon": "mdi-view-dashboard"
+  },
+  {
+    "title": "Organization",
+    "path": "/Organization",
+    "color": "primary",
+    "isSelected": false,
+    "icon": "mdi-domain"
+  },
+  {
+    "title": "Users Management",
+    "path": "/Users",
+    "color": "green",
+    "isSelected": false,
+    "icon": "mdi-account-multiple"
+  },
+  {
+    "title": "Roles",
+    "path": "/Roles",
+    "color": "green",
+    "isSelected": false,
+    "icon": "mdi-account-group-outline"
+  },
+  {
+    "title": "Assets",
+    "path": "/Assets",
+    "color": "blue",
+    "isSelected": false,
+    "icon": "mdi-archive-outline"
+  },
+  {
+    "title": "Reports",
+    "path": "/Reports",
+    "color": "orange",
+    "isSelected": false,
+    "icon": "mdi-file-chart"
+  },
+  {
+    "title": "Notifications",
+    "path": "/Notifications",
+    "color": "purple",
+    "isSelected": false,
+    "icon": "mdi-bell-outline"
+  },
+  {
+    "title": "Settings",
+    "path": "/Settings",
+    "color": "grey",
+    "isSelected": false,
+    "icon": "mdi-cog-outline"
+  }
+]

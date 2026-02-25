@@ -1,0 +1,26 @@
+[
+  {
+    "title":"Admin",
+    "path":"AdminRestapi",
+    "color":"green",
+    "isSelected":false,
+    "icon":"mdi-security"
+
+  }
+,{
+  "title":"Organization",
+  "path":"OrganizationRestapi",
+  "color":"primary",
+  "isSelected":false,
+  "icon":"mdi-domain"
+},
+  {
+  "title":"Roles",
+  "path" :"RolesRestapi",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-account-group-outline"
+  }
+]
+
+ 

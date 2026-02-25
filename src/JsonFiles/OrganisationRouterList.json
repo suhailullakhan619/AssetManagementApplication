@@ -1,0 +1,48 @@
+[
+  {
+  "title":"Users Management",
+  "path" :"Users",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-account-multiple"
+  },
+  {
+  "title":"Roles",
+  "path" :"Roles",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-account-group-outline"
+  },
+   {
+  "title":"Category",
+  "path" :"Category",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-palette-swatch-outline"
+  },
+   {
+  "title":"Manufacturer",
+  "path" :"Manufacture",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-office-building-outline"
+  },
+   {
+  "title":"Supplier",
+  "path" :"Supplier",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-truck-outline"
+  },
+  {
+  "title":"Asset",
+  "path" :"Asset",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-cube-outline"
+  }
+  
+]
+
+ 
+ 

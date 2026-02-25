@@ -1,0 +1,18 @@
+projects:
+  asset-api:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/graphql/**/*.js
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: javascript
+        generatedFileName: ''
+        docsFilePath: src/graphql
+        region: ap-south-1
+        apiId: xocxxf6nh5hq5kbfsoqy3wxsem
+        maxDepth: 7
+extensions:
+  amplify:
+    version: 3

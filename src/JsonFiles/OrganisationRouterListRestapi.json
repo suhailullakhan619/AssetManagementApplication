@@ -1,0 +1,26 @@
+[
+  {
+  "title":"Users Management",
+  "path" :"UsersRestapi",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-account-multiple"
+  },
+  {
+  "title":"Roles",
+  "path" :"RolesRestapi",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-account-group-outline"
+  },
+   {
+  "title":"Category",
+  "path" :"CategoryRestapi",
+  "color":"green",
+  "isSelected":false,
+  "icon":"mdi-palette-swatch-outline"
+  }
+]
+
+ 
+ 
