@@ -28,8 +28,8 @@ Amplify.configure({
   },
   Storage:{
   S3:{
-    bucket:'assetmgmt-images-bucket',
-    region:'ap-south-1'
+    bucket:process.env.VUE_APP_AWS_S3_BUCKET_ID,
+    region:process.env.VUE_APP_AWS_S3_BUCKET_REGION
   }
   }
 
