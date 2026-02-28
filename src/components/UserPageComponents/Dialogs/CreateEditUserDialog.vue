@@ -123,6 +123,15 @@ export default {
           address: this.StoreObj.address,
         };
       }
+       if (value && this.StoreObj.action === "CREATE") {
+      this.createOrganizationUserInput = {
+        user_id: null,
+        user_name: '',
+        user_email_id: '',
+        address: '',
+      }
+      this.$refs.form?.resetValidation()
+    }
     },
   },
   methods: {
@@ -191,8 +200,11 @@ export default {
             this.CreateEditUserDialogEmit(2);
           }, 1000);
         }
+        if(result?.status==="ERROR"){
+          this.showSnackBar("error",  result?.status_message ||result?.message ||"Something went wrong");
+        }
       } catch (error) {
-        this.showSnackBar("error", error.errors[0].status_message);
+        console.log('createOrgUser error',error)
       } finally {
         this.btnLoading = false;
       }

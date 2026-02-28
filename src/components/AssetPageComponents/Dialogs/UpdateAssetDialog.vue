@@ -103,7 +103,7 @@ const client = generateClient()
 export default {
   props: {
     UpdateAssetDialog: Boolean,
-    asset: Object // 👈 asset to edit
+    asset: Object
   },
 
   emits: ['update:UpdateAssetDialog', 'success'],

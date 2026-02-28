@@ -41,3 +41,8 @@ export const listAssets = /* GraphQL */ `
     listAssets
   }
 `;
+export const getAsset = /* GraphQL */ `
+  query GetAsset($input: getAssetInput) {
+    getAsset(input: $input)
+  }
+`;

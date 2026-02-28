@@ -28,13 +28,28 @@
 </template>
 
 <script>
+import { getCurrentUser } from '@/mixins/GetCurrentUser/getCurrentUser';
 export default {
   data() {
     return {};
   },
+  mixins: [getCurrentUser],
   methods: {
-    routingBasedOnThePageNotFound() {
-      this.$router.push("/");
+    async routingBasedOnThePageNotFound() {
+      try{
+      await this.getCurrentUserMethod();
+    if (this?.getCurrentUserDetails.role_id==='SUPER_ADMIN') {
+      this.$router.push("/Admin")
+    } else if(this?.getCurrentUserDetails.role_id==='ORG_OWNER'){
+      this.$router.push('/Users')
+    } else if(this?.getCurrentUserDetails.role_id==='ORG_USER'){
+      this.$router.push('/UserProfile')
+    } else {
+      this.$router.push("/")
+    }
+  }catch(e){
+    this.$router.push('/')
+  }
     },
   },
   computed: {

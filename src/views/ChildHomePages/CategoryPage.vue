@@ -24,7 +24,7 @@
       <v-spacer />
 
       <v-btn
-      v-if="!this.$route.query.parentId"
+     v-if="currentCategoryId === null"
       class="d-flex d-sm-none"
       icon=""
         color="primary"
@@ -35,7 +35,7 @@
         <v-icon >mdi-plus</v-icon>
       </v-btn>
       <v-btn
-      v-if="!this.$route.query.parentId"
+     v-if="currentCategoryId === null"
         color="primary"
         variant="flat"
         rounded="lg"
@@ -45,22 +45,48 @@
         <v-icon start>mdi-plus</v-icon>
    Add Category
       </v-btn>
+
+      <v-btn
+  v-if="currentCategoryId !== null"
+  class="d-flex d-sm-none"
+  icon=""
+  color="primary"
+  variant="flat"
+  rounded="circle"
+  @click="OpenCreateChildCategory(currentParentCategory)"
+>
+  <v-icon>mdi-plus</v-icon>
+</v-btn>
+<v-btn
+  v-if="currentCategoryId !== null"
+  color="primary"
+  variant="flat"
+  rounded="lg"
+  class="d-none d-sm-flex"
+  @click="OpenCreateChildCategory(currentParentCategory)"
+>
+  <v-icon start>mdi-plus</v-icon>
+  Add Sub Category
+</v-btn>
     </v-toolbar>
 
 
     <!-- CATEGORY TABLE -->
     <v-card elevation="2" rounded="lg">
        <v-card-text  class="pa-2 d-flex justify-end">
-      <v-breadcrumbs v-if="$route.query.parentName">
-  <v-breadcrumbs-item
-    title="Categories"
-    @click="$router.push({ name: 'CategoryPage' })"
-    class="cursor-pointer"
-  />
-  <v-breadcrumbs-item
-    :title="$route.query.parentName"
-    disabled
-  />
+        <v-breadcrumbs :items="breadcrumbs">
+  <template #item="{ item }">
+    <v-breadcrumbs-item
+     :disabled="item.disabled"
+  @click="item.action && item.action()"
+      class="cursor-pointer"
+    >
+      {{ item.title }}
+    </v-breadcrumbs-item>
+  </template>
+   <template #divider>
+    <v-icon>mdi-chevron-right</v-icon>
+  </template>
 </v-breadcrumbs>
     <v-spacer></v-spacer>
             <v-col cols="12"  sm="3" md="3" lg="3" xl="3" class="pa-0">
@@ -82,11 +108,20 @@
         fixed-header
         :height="tableHeight"
         :search="search"
+        :class="{'no-row-click':currentCategoryId!==null}"
         @click:row="onRowClick"
       >
        <template v-slot:[`item.category_status`]="{item}">
           <v-chip density="comfortable" :color="item.category_status==='ACTIVE'?'green':'red' ">{{ item.category_status }}</v-chip>
         </template>
+<template v-slot:[`item.sub_count`]="{ item }">
+  <v-chip 
+    :color="getSubCategoryCount(item.category_id) > 0 ? 'green' : 'grey'"
+    density="comfortable"
+  >
+    {{ getSubCategoryCount(item.category_id) }}
+  </v-chip>
+</template>
 
         <!-- ACTIONS -->
         <template v-slot:[`item.actions`]="{item}">
@@ -111,7 +146,7 @@
                 </template>
                 <v-list-item-title>Edit</v-list-item-title>
               </v-list-item>
-              <v-list-item v-if="!$route.query.parentId" @click="OpenCreateChildCategory(item)">
+              <v-list-item v-if="!$route.params.parentId" @click="OpenCreateChildCategory(item)">
   <template #prepend>
     <v-icon color="primary">mdi-plus</v-icon>
   </template>
@@ -145,47 +180,30 @@
 </template>
 
 
+
 <script>
-import CreateCategoryDilaog from '@/components/CategoryComponents/Dialogs/CreateCategoryDilaog.vue';
-import OverlayComp from '@/components/Extras/OverlayComp.vue';
-import UpdateCategoryDialog from '@/components/CategoryComponents/Dialogs/UpdateCategoryDialog.vue';
-import { categoryList } from '@/mixins/Category/CategoryList';
-import DeleteCategoryDilaog from '@/components/CategoryComponents/Dialogs/DeleteCategoryDilaog.vue';
+import CreateCategoryDilaog from '@/components/CategoryComponents/Dialogs/CreateCategoryDilaog.vue'
+import OverlayComp from '@/components/Extras/OverlayComp.vue'
+import UpdateCategoryDialog from '@/components/CategoryComponents/Dialogs/UpdateCategoryDialog.vue'
+import { categoryList } from '@/mixins/Category/CategoryList'
+import DeleteCategoryDilaog from '@/components/CategoryComponents/Dialogs/DeleteCategoryDilaog.vue'
 
 export default {
   components: {
     CreateCategoryDilaog,
     OverlayComp,
     UpdateCategoryDialog,
-    DeleteCategoryDilaog
+    DeleteCategoryDilaog,
   },
+
   mixins: [categoryList],
-
-  mounted() {
-    this.tableHeight = window.innerHeight - 350
-    this.loadFromRoute()
-  },
-
-  computed: {
-    mdAndUp() {
-      return this.$vuetify.display.mdAndUp
-    },
-  },
-
-  watch: {
-    '$vuetify.display.height'(val) {
-      this.tableHeight = val - 280
-    },
-    '$route.query.parentId': {
-      immediate: true,
-      handler() {
-        this.loadFromRoute()
-      }
-    }
-  },
 
   data() {
     return {
+      allCategoriesArray: [],
+      currentCategoryId: null,
+      breadcrumbStack: [],
+
       currentParentCategory: null,
       selectedParentCategory: null,
       selectedCategory: {},
@@ -196,28 +214,77 @@ export default {
 
       overlay: false,
       search: '',
-      tableHeight: 0,
+      tableHeight: 0, 
+    }
+  },
 
-      headers: [
+  mounted() {
+    this.tableHeight = window.innerHeight - 350
+    this.loadFromRoute()
+  },
+
+  computed: {
+    mdAndUp() {
+      return this.$vuetify.display.mdAndUp
+    },
+     headers(){
+      const tableTitle=[
         { title: 'Category Name', key: 'category_name' },
         { title: 'Category Status', key: 'category_status' },
         { title: 'Category Type', key: 'category_type' },
         { title: 'Actions', key: 'actions' },
       ]
+        if (this.currentCategoryId === null) {
+      tableTitle.splice(3, 0, { title: 'Sub-Category Count', key: 'sub_count' })
     }
+      return tableTitle
+    },
+    // ✅ Breadcrumbs driven by local state (NO ROUTER)
+    breadcrumbs() {
+      const crumbs = [
+        {
+          title: 'Categories',
+          disabled: this.currentCategoryId === null,
+          action: () => {
+            this.currentCategoryId = null
+            this.breadcrumbStack = []
+            this.loadFromRoute()
+          },
+        },
+      ]
+
+      this.breadcrumbStack.forEach((cat, index) => {
+        crumbs.push({
+          title: cat.category_name,
+          disabled: index === this.breadcrumbStack.length - 1,
+          action: () => {
+            this.breadcrumbStack = this.breadcrumbStack.slice(0, index + 1)
+            this.currentCategoryId = cat.category_id
+            this.loadFromRoute()
+          },
+        })
+      })
+
+      return crumbs
+    },
+  },
+
+  watch: {
+    '$vuetify.display.height'(val) {
+      this.tableHeight = val - 280
+    },
   },
 
   methods: {
+    getSubCategoryCount(parentId) {
+  if (!Array.isArray(this.allCategoriesArray)) return 0
+  return this.allCategoriesArray.filter(
+    c => c.parent_category_id === parentId
+  ).length
+},
     OpenCreateCategoryDilaog() {
-      if (this.$route.query.parentId) {
-    // We are inside a parent → add child
-    this.selectedParentCategory = this.currentParentCategory
-  } else {
-    // Root → add parent
-    this.selectedParentCategory = null
-  }
-
-  this.CreateCategoryDilaog = true
+      this.selectedParentCategory = this.currentParentCategory
+      this.CreateCategoryDilaog = true
     },
 
     OpenCreateChildCategory(item) {
@@ -237,22 +304,34 @@ export default {
 
     async loadFromRoute() {
       this.overlay = true
-      const parentId = this.$route.query.parentId || null
-      await this.getCategoryListMethod(parentId)
-      this.currentParentCategory =
-        parentId
-          ? this.categoryListArray.find(c => c.category_id === parentId) || null
-          : null
+
+      await this.getCategoryListMethod(this.currentCategoryId)
+       if (this.currentCategoryId === null) {
+    this.allCategoriesArray = [...this.categoryListArray]
+  }
+
+       if (this.currentCategoryId !== null) {
+    this.currentParentCategory = this.breadcrumbStack[this.breadcrumbStack.length - 1] || null
+  } else {
+    this.currentParentCategory = null
+  }
+
       this.overlay = false
     },
 
     onRowClick(event, { item }) {
-       if (this.$route.query.parentId) return
-      this.$router.push({
-        name: 'CategoryPage',
-        query: { parentId: item.category_id ,parentName:item.category_name}
-      })
+  if (this.currentCategoryId !== null) return
+
+  this.breadcrumbStack.push(item)
+  this.currentCategoryId = item.category_id
+  this.loadFromRoute()
     },
-  }
+  },
 }
 </script>
+
+<style scoped>
+.no-row-click tbody tr{
+cursor:default;
+}
+</style>

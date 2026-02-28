@@ -16,11 +16,6 @@ export const createUser = /* GraphQL */ `
     createUser(input: $input)
   }
 `;
-export const updateRole = /* GraphQL */ `
-  mutation UpdateRole($id: ID!, $input: updateRoleInput) {
-    updateRole(id: $id, input: $input)
-  }
-`;
 export const createOrganizationUser = /* GraphQL */ `
   mutation CreateOrganizationUser($input: createOrganizationUserInput) {
     createOrganizationUser(input: $input)

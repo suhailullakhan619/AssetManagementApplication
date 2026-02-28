@@ -13,7 +13,7 @@
               <v-img src="@/assets/assetLogo.svg" alt="Logo" />
             </v-avatar>
           </template>
-          <v-list-item-title  class="navigationheader" >Assets</v-list-item-title>
+          <v-list-item-title  class="navigationheader" >AssetDesk</v-list-item-title>
           <template #append>
             <v-btn :icon="mdAndUp
               ? rail

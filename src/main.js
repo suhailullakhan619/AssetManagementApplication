@@ -12,6 +12,8 @@ Amplify.configure({
     Cognito: {
       userPoolId: process.env.VUE_APP_AWS_COGNITO_USER_POOL_ID,
       userPoolClientId: process.env.VUE_APP_AWS_USER_POOL_WEB_CLIENT_ID,
+    identityPoolId:process.env.VUE_APP_AWS_IDENTITY_POOL_ID,
+    allowGuestAccess: true,
       loginWith: {
         email: true,
       },
@@ -24,6 +26,12 @@ Amplify.configure({
       defaultAuthMode: process.env.VUE_APP_AWS_AUTHENTICATION_TYPE,
     },
   },
+  Storage:{
+  S3:{
+    bucket:'assetmgmt-images-bucket',
+    region:'ap-south-1'
+  }
+  }
 
 });
 console.log("hello", Amplify.getConfig());

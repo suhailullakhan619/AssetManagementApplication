@@ -5,8 +5,8 @@ const client=generateClient();
 export const categoryList={
 data(){
   return {
-categoryListArray:[]
-  }
+categoryListArray:[], 
+}
 },
 methods:{
   async getCategoryListMethod(parentCategoryId=null){
@@ -17,7 +17,7 @@ methods:{
     })
     const resultObj=JSON.parse(result.data.listCategories)
     console.log('categoryList data',result)
-    this.categoryListArray=resultObj.data
+    this.categoryListArray=resultObj.data||[]
   }
 }
 }

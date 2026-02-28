@@ -93,6 +93,14 @@
             {{dateMStoddmmyyyy(item.created_on )}}
           </div>
         </template>
+        <template v-slot:[`item.image_key`]="{ item }">
+          <div v-if="item.image_key &&item.image_key.length">
+            <v-chip close color="primary" @click="OpenImage(item.image_key)">View Images ({{ item.image_key.length }})</v-chip>
+          </div>
+          <div v-else>
+            ---
+          </div>
+</template>
          <template v-slot:[`item.sub_category_name`]="{ item }">
           <div
           >
@@ -155,6 +163,10 @@
       @success="refreshAssetList"
     /> 
   </v-container>
+  <ImagesViewerDialog 
+   v-model:imageViewerDialog="imageViewerDialog"
+  :images="viewerImages"
+  :startIndex="currentImageIndex"/>
 </template>
 
 <script>
@@ -164,17 +176,22 @@ import UpdateAssetDialog from '@/components/AssetPageComponents/Dialogs/UpdateAs
 import DeleteAssetDialog from '@/components/AssetPageComponents/Dialogs/DeleteAssetDialog.vue';
 import { AssetList } from '@/mixins/AssetUser/AssetList';
 import { dateMStoddmmyyyy } from '@/utils/DateMStoddmmyyy';
-
+import { getImageUrl } from '@/mixins/UploadImageFile/UploadImageFileToS3';
+import ImagesViewerDialog from '@/components/AssetPageComponents/Dialogs/ImagesViewerDialog.vue';
 export default {
   components: {
     OverlayComp,
     CreateAssetDialog,
     UpdateAssetDialog,
-    DeleteAssetDialog
+    DeleteAssetDialog,
+    ImagesViewerDialog
   },
 mixins:[AssetList],
   data() {
     return {
+      imageViewerDialog: false,
+viewerImages: [],
+currentImageIndex: 0,
       overlay: false,
       search: '',
       tableHeight: 0,
@@ -191,6 +208,7 @@ mixins:[AssetList],
         { title: 'Sub Category', key: 'sub_category_name', align: 'start' },
         { title: 'Manufacturer', key: 'manufacturer_name', align: 'start' },
         { title: 'Supplier', key: 'supplier_name', align: 'start' },
+        { title: 'Images', key: 'image_key', align: 'start' },
         { title: 'Created On', key: 'created_on', align: 'start' },
         { title: 'Actions', key: 'actions', align: 'start' }
       ]
@@ -211,25 +229,38 @@ mixins:[AssetList],
   watch: {
     '$vuetify.display.height'(val) {
       this.tableHeight = val - 320
-    }
+    },
   },
 
   methods: {
     dateMStoddmmyyyy,
+  async OpenImage(images) {
+  try {
+    if (!images || images.length === 0) return
+
+    const urls = await Promise.all(
+      images.map(key => getImageUrl(key))
+    )
+
+    this.viewerImages = urls
+    this.currentImageIndex = 0   // always start from first
+    this.imageViewerDialog = true
+
+  } catch (e) {
+    console.error('Error loading images', e)
+  }
+},
     openCreateDialog() {
       this.createDialog = true
     },
-
     openEditDialog(item) {
       this.selectedAsset = item
       this.updateDialog = true
     },
-
     openDeleteDialog(item) {
       this.selectedAsset = item
       this.deleteDialog = true
     },
-
     async refreshAssetList() {
       this.overlay = true
       await this.getAssetListMethod()

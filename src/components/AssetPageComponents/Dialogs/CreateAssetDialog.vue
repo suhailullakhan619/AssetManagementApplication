@@ -87,7 +87,7 @@
 <v-menu
   v-model="dateMenu"
   :close-on-content-click="false"
-  transition="scale-transition"
+  transition="slide-y-transition"
 >
   <template #activator="{ props }">
     <v-text-field
@@ -110,6 +110,46 @@
   @update:model-value="onDateSelect"
 />
 </v-menu>
+  <!-- REPLACE the entire v-file-upload block with this -->
+<div class="upload-box" @click="triggerFileInput" @dragover.prevent @drop.prevent="onDrop">
+  <input
+    ref="fileInput"
+    type="file"
+    accept="image/*"
+    multiple
+    style="display:none"
+    @change="onFileChange"
+  />
+  <div class="d-flex align-center justify-center ga-3">
+    <v-icon color="primary">mdi-cloud-upload-outline</v-icon>
+    <span class="text-body-2 font-weight-medium">
+      Drag & Drop or
+      <span class="text-primary" style="text-decoration:underline">Browse File</span>
+    </span>
+    <span class="text-caption text-grey">| Max 2MB</span>
+  </div>
+</div>
+
+<!-- File preview -->
+<div v-if="form.image_key.length" class="mt-2 d-flex flex-wrap ga-2">
+  <v-chip
+    v-for="(file, index) in form.image_key"
+    :key="index"
+    color="primary"
+    variant="tonal"
+    closable
+    @click:close="removeImage(index)"
+  >
+    <v-icon start>mdi-file-image</v-icon>
+    {{ file.name }}
+  </v-chip>
+</div>
+
+<!-- Error -->
+<p v-if="imageError" class="text-caption text-error mt-1 ml-1">
+  {{ imageError }}
+</p>
+
 
            <v-card-actions class="justify-end">
         <v-btn class="fontVariant1" variant="outlined" color="error" @click="CreateAssetDialogclose">
@@ -121,6 +161,7 @@
           type="submit"
           class="fontVariant1"
           :loading="loading"
+          :disabled="loading"
         >
           Confirm
         </v-btn>
@@ -141,6 +182,7 @@ const client=generateClient();
 import { createAsset } from '@/graphql/mutations';
 import { ManufactureList } from '@/mixins/manufacture/ManufactureList.js';
 import { supplierList } from '@/mixins/Supplier/SupplierList.js';
+import { UploadDataToS3 } from '@/mixins/UploadImageFile/UploadImageFileToS3';
 export default {
   props: {
     CreateAssetDialog:Boolean,
@@ -155,7 +197,6 @@ watch: {
       this.loadParentCategories()
     }
   },
-
   'form.category_id': {
     async handler(categoryId) {
       this.form.sub_category_id = null
@@ -189,14 +230,27 @@ mixins:[categoryList,ManufactureList,supplierList],
        dateMenu: false, 
       valid: false,
       loading:false,
+       imageError: '', 
   requiredRule: v => !!v || 'This field is required',
+imageRequiredRule: (files) => {
+  if (!files || files.length === 0)
+    return 'At least one image is required'
+
+  for (const file of files) {
+    if (file.size > 2 * 1024 * 1024)
+      return 'Each image must be under 2MB'
+  }
+
+  return true
+},
       form: {
         asset_name: '',
         category_id: null,
          sub_category_id: null,
         manufacturer_id: null,
         supplier_id: null,
-        asset_verification_date: null 
+        asset_verification_date: null ,
+         image_key: [] 
       },
       snackbarComponent:{},
       parentCategoryListArray: [],
@@ -209,6 +263,45 @@ mounted() {
   this.supplierListMethod()
 },
   methods: {
+  triggerFileInput() {
+  this.$refs.fileInput.click()
+},
+
+onFileChange(event) {
+  const files = Array.from(event.target.files)
+  if (!files.length) return
+  files.forEach(file => this.validateAndSetFile(file))
+},
+
+onDrop(event) {
+  const files = Array.from(event.dataTransfer.files).filter(f =>
+    f.type.startsWith('image/')
+  )
+  if (!files.length) {
+    this.imageError = 'Only image files are allowed'
+    return
+  }
+  files.forEach(file => this.validateAndSetFile(file))
+},
+
+validateAndSetFile(file) {
+  this.imageError = ''
+  if (file.size > 2 * 1024 * 1024) {
+    this.imageError = `${file.name} exceeds 2MB limit`
+    return
+  }
+  // Avoid duplicates
+  const exists = this.form.image_key.find(f => f.name === file.name)
+  if (!exists) {
+    this.form.image_key.push(file)
+  }
+},
+
+removeImage(index) {
+  this.form.image_key.splice(index, 1)
+  this.imageError = ''
+  if (this.$refs.fileInput) this.$refs.fileInput.value = ''
+},
     onDateSelect(val) {
     if (!val) return
 
@@ -241,14 +334,17 @@ this.snackbarComponent.snackBarModel=false;
 
     reset() {
      this.$refs.formRef.reset()
+     this.imageError = ''      
       this.form={
         asset_name: '',
         category_id: null,
          sub_category_id: null,
         manufacturer_id: null,
         supplier_id: null,
-        asset_verification_date: null 
+        asset_verification_date: null ,
+        image_key:[]
       }
+       if (this.$refs.fileInput) this.$refs.fileInput.value = '' 
     },
 
     async validateCreateAssetDialogForm(){
@@ -258,6 +354,11 @@ this.snackbarComponent.snackBarModel=false;
         return;
       }
 
+        if (!this.form.image_key || this.form.image_key.length === 0) {
+  this.imageError = 'At least one image is required'
+  return
+}
+
       await this.CreateAssetDialogSubmit()
 
     },
@@ -266,6 +367,13 @@ this.snackbarComponent.snackBarModel=false;
          const assetDateMs = this.form.asset_verification_date
       ?this.form.asset_verification_date
       : null;
+   const files = this.form.image_key
+if (!files || files.length === 0) {
+  this.showSnackbar('error', 'Please upload at least one image')
+  this.loading = false
+  return
+}
+const imageKeys = await Promise.all(Array.from(files.map(file => UploadDataToS3(file))))
        try{
         const payload = {
         asset_name: this.form.asset_name,
@@ -273,7 +381,8 @@ this.snackbarComponent.snackBarModel=false;
   sub_category_id: this.form.sub_category_id,
   manufacturer_id: this.form.manufacturer_id,
   supplier_id: this.form.supplier_id,
-  asset_verification_date: assetDateMs 
+  asset_verification_date: assetDateMs ,
+  image_key:imageKeys
       }
 
       console.log('createAssetInput:', payload)
@@ -314,3 +423,19 @@ this.snackbarComponent.snackBarModel=false;
   }
 }
 </script>
+
+<style scoped>
+.upload-box {
+  border: 2px dashed #03376b;
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.upload-box:hover {
+  background: rgba(3, 55, 107, 0.04);
+}
+</style>

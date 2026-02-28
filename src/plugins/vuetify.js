@@ -1,7 +1,8 @@
 // Styles
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
-
+import { VFileUpload } from 'vuetify/labs/VFileUpload'
+import { VFileUploadItem } from 'vuetify/labs/VFileUpload'
 // Vuetify
 import { createVuetify } from 'vuetify'
 const myCustomTheme = {
@@ -23,6 +24,10 @@ const darkTheme = {
 }
 export default createVuetify({
   // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
+   components:{
+    VFileUpload,
+    VFileUploadItem
+  },
    theme: {
     defaultTheme: 'light',
     themes: {
@@ -39,4 +44,5 @@ defaults: {
       density:'comfortable'
     }
   },
+ 
 })
