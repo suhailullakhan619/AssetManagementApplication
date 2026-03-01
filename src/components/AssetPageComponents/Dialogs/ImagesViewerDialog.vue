@@ -20,7 +20,7 @@
           @click="prev"
           color="primary"
             class="position-absolute"      
-  style="opacity: 0.7;left: 10px;top: 50%; transform: translateY(-50%);z-index: 10;"
+  style="opacity: 0.7;left: 10px;top: 50%; transform: translateY(-50%);z-index:10;"
         >
           <v-icon size="40"  color="white">mdi-chevron-left</v-icon>
         </v-btn>
@@ -38,7 +38,7 @@
           color="primary"
           @click="next"
             class="position-absolute "
-    style="opacity: 0.7;right: 10px;top: 50%; transform: translateY(-50%);z-index: 10;"
+    style="opacity: 0.7;right: 10px;top: 50%; transform: translateY(-50%);z-index:10;"
         >
           <v-icon size="40" color="white">mdi-chevron-right</v-icon>
         </v-btn>
