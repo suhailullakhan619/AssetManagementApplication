@@ -167,16 +167,27 @@ export default {
     async createOrganisationMethodApi() {
       this.loading = true;
       try {
-        await this.CreateOrganisationMethod();
-        this.snackbarComponent = {
+     const result=await this.CreateOrganisationMethod();
+  console.log('organ',result)
+  if(result.status==='SUCCESS'){
+ this.snackbarComponent = {
           snackBarModel: true,
           color: "success",
-          message: "Organization created successfully",
+          message: result.status_message
+||"Organization created successfully",
         };
 
         setTimeout(() => {
           this.CreateOrgnizationDialogclose();
         }, 1200);
+  }else{
+     this.snackbarComponent = {
+          snackBarModel: true,
+          color: "error",
+          message: result.status_message||'Error',
+        };
+  }
+       
       } catch (e) {
         this.snackbarComponent = {
           snackBarModel: true,

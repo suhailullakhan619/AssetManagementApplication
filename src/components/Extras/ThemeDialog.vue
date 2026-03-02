@@ -3,6 +3,8 @@
     icon
     rounded="circle"
     class="mr-2"  
+    height="40"
+    width="40"
   >
     <v-icon size="22" @click="toggleTheme">
       {{ isDark ? 'mdi-weather-night' : 'mdi-white-balance-sunny' }}

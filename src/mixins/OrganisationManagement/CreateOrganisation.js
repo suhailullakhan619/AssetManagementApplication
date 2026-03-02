@@ -34,14 +34,9 @@ export const CreateOrganisation = {
           input: params
         }
       })
+      const parsed=JSON.parse(response.data.createOrganisation)
       console.log('organisation is created', response.data)
-      if (response) {
-        this.snackbarComponent = {
-          snackBarModel: true,
-          color: 'green',
-          message: 'Organization Created Successfully..!!'
-        }
-      }
+      return parsed
     }
   },
 }

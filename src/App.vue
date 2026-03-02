@@ -29,6 +29,4 @@
 .v-textarea .v-field__input{
   height: 40px;
 }
-
-
 </style>

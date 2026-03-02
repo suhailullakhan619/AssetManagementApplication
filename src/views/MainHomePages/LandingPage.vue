@@ -15,7 +15,7 @@
           </template>
           <v-list-item-title  class="navigationheader" >AssetDesk</v-list-item-title>
           <template #append>
-            <v-btn :icon="mdAndUp
+            <v-btn height="40" width="40" :icon="mdAndUp
               ? rail
                 ? 'mdi-chevron-double-right'
                 : 'mdi-chevron-double-left'
@@ -71,8 +71,8 @@
 
     <!-- APP BAR -->
     <v-app-bar app  elevation="0" class="fixed-app-header">
-      <v-btn icon width="40" height="40" class="d-md-none ml-0" variant="text" color="transparent" @click="drawer = !drawer" >
-        <v-icon color="black" size="30">mdi-menu</v-icon>
+      <v-btn icon width="40" height="40" class="d-md-none ml-0" variant="flat" rounded="circle"  @click="drawer = !drawer" >
+        <v-icon  size="30">mdi-menu</v-icon>
       </v-btn>
       <v-btn v-if="mdAndUp" class="align-center" elevation="0"   @click="openSearchDialog">Search
         <template #prepend>
@@ -80,7 +80,9 @@
         </template>
         <span class="ml-2 border-sm pa-1 rounded-lg" style="color: gray;">CTRL+K</span>
       </v-btn>
-      <v-icon v-else size="30"  @click="openSearchDialog">mdi-magnify</v-icon>
+        <v-btn  v-else  icon width="40" height="40" rounded="circle" @click="openSearchDialog">
+      <v-icon size="30" >mdi-magnify</v-icon>
+      </v-btn>
       <v-spacer />
 
       <ThemeDialog />
@@ -90,7 +92,7 @@
       </v-avatar>
 
       <v-list density="compact" class="d-flex flex-row">
-        <v-list-item  class="d-flex flex-column custom-v-list-1">
+        <v-list-item  class="d-none d-sm-flex flex-column custom-v-list-1">
           <v-list-item-title>{{ getCurrentUserDetails?.role_id||'' }}</v-list-item-title>
           <v-list-item-subtitle>{{
             getCurrentUserDetails?.user_email_id||''
@@ -245,7 +247,7 @@ export default {
 };
 </script>
 
-<style >
+<style scoped >
 .v-overlay {
   z-index: 3000 !important;
 }

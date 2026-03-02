@@ -460,8 +460,6 @@ export default {
       );
     },
     async applyStatusFilter(status) {
-      this.selectedStatus = status;
-
       // If API supports filter
       await this.getlistUsersNewMethod(status);
       // this.chevronArrowBtn = false;
