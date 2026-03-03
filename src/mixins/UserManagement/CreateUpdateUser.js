@@ -1,5 +1,5 @@
 import { generateClient } from "aws-amplify/api"
-import { createOrganizationUser, editUser, editUserAsOwner } from "@/graphql/mutations"
+import { createOrganizationUser, editUser, editUserAsOwner,deleteUser } from "@/graphql/mutations"
 const client = generateClient();
 export const UserMutations = {
   methods: {
@@ -41,6 +41,19 @@ export const UserMutations = {
           : 'editUser';
       console.log(response.data)
       return JSON.parse(response.data[key]);
+    },
+    async deleteUserMethod(targetUserId){
+      const response=await client.graphql({
+        query:deleteUser,
+        variables:{
+          input:{
+           target_user_id:targetUserId
+          }
+        }
+      })
+      const resultObj=JSON.parse(response.data.deleteUser)
+      console.log('deleteUser',resultObj)
+      return resultObj
     }
   }
 }

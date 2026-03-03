@@ -80,6 +80,7 @@
      :disabled="item.disabled"
   @click="item.action && item.action()"
       class="cursor-pointer"
+      color="primary"
     >
       {{ item.title }}
     </v-breadcrumbs-item>
@@ -234,9 +235,6 @@ export default {
         { title: 'Category Type', key: 'category_type' },
         { title: 'Actions', key: 'actions' },
       ]
-        if (this.currentCategoryId === null) {
-      tableTitle.splice(3, 0, { title: 'Sub-Category Count', key: 'sub_count' })
-    }
       return tableTitle
     },
     // ✅ Breadcrumbs driven by local state (NO ROUTER)

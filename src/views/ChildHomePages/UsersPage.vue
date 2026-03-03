@@ -311,6 +311,7 @@ import DeleteUserDialog from "@/components/UserPageComponents/Dialogs/DeleteUser
 import UserStatusUpdateDialog from "@/components/UserPageComponents/Dialogs/UserStatusUpdateDialog.vue";
 import { getlistUsersNew } from "@/mixins/UserManagement/getlistUsersNew";
 import { formatDate } from "@/utils/DateFormater.js";
+import {UserMutations} from '@/mixins/UserManagement/CreateUpdateUser'
 export default {
   props: {
     SnackbarComp: Object,
@@ -322,7 +323,7 @@ export default {
     SnackbarComp,
     DeleteUserDialog,
   },
-  mixins: [getlistUsersNew],
+  mixins: [getlistUsersNew,UserMutations],
   data() {
     return {
       selectedUserForStatus: null,
@@ -407,7 +408,7 @@ export default {
       };
       setTimeout(() => {
         this.snackbarComponent.snackBarModel = false;
-      }, 1000);
+      }, 1500);
     },
     openDialogMethod(action, item) {
       if (action === "CREATE") {
@@ -422,8 +423,8 @@ export default {
         };
         this.CreateEditUserDialog = true;
       } else if (action === "DELETE") {
-        this.StoreObj = item;
-        this.StoreObj.action = action;
+        this.StoreObj = {action:'DELETE'};
+        this.deleteDialog=false
       }
     },
     async CreateEditUserDialogEmit(Toggle) {
@@ -471,14 +472,22 @@ export default {
       this.deleteDialog = true;
     },
     async confirmDelete(user) {
+      this.overlay=true
       try {
         // 🔁 call delete API here
-        await this.deleteUserMethod(user.user_id);
-
+       const res= await this.deleteUserMethod(user.user_id);
+        console.log('delete user',res)
+        if(res.status==='SUCCESS'){
+        this.showSnackBar("success",res.status_message|| "User deleted successfully");
+        }
+        if(res.status==='Error'){
+        this.showSnackBar("error",res.status_message || "Failed to delete user");
+        }
         await this.getlistUsersNewMethod(this.selectedStatus);
-        this.showSnackBar("success", "User deleted successfully");
       } catch (e) {
-        this.showSnackBar("error", e.status_message || "Failed to delete user");
+        console.error('error in deleting user',e)
+      }finally{
+        this.overlay=false
       }
     },
   },

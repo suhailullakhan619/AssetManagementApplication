@@ -70,7 +70,7 @@
     </v-navigation-drawer>
 
     <!-- APP BAR -->
-    <v-app-bar app  elevation="0" class="fixed-app-header">
+    <v-app-bar app  elevation="0" height="56" class="border-b-sm" >
       <v-btn icon width="40" height="40" class="d-md-none ml-0" variant="flat" rounded="circle"  @click="drawer = !drawer" >
         <v-icon  size="30">mdi-menu</v-icon>
       </v-btn>
@@ -250,10 +250,6 @@ export default {
 <style scoped >
 .v-overlay {
   z-index: 3000 !important;
-}
-.fixed-app-header{
-  min-height: 68px !important;
-  max-height: 68px !important;
 }
 .navigationheader {
   padding: 0px;

@@ -36,6 +36,11 @@ export const editUserAsOwner = /* GraphQL */ `
     editUserAsOwner(input: $input)
   }
 `;
+export const deleteUser = /* GraphQL */ `
+  mutation DeleteUser($input: deleteUserInput) {
+    deleteUser(input: $input)
+  }
+`;
 export const exportUsersExcel = /* GraphQL */ `
   mutation ExportUsersExcel {
     exportUsersExcel
